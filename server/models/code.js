@@ -4,7 +4,10 @@ const codeSchema = new mongoose.Schema({
   content: String,
   roomId: Number,
   version: String,
-  message: String
+  message: String,
+}, 
+{
+  timestamps: true,
 });
 
 const CodeModel = mongoose.model('Code', codeSchema);

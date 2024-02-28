@@ -102,7 +102,7 @@ router.get("/version/list", async (req, res) => {
 				.send({ message: "Forbidden" });
 		}
 		// req.user = decoded;
-		const data = CodeModel.find()
+		const data = await CodeModel.find()
 		res.status(201).send({ history : data});
 	} catch (error) {
 		console.log(error, 'error')

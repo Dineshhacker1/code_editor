@@ -17,7 +17,7 @@ const LoginReducer = (state = initialState, action = {}) => {
             return {
                 ...state,
                 isLoading: false,
-                token: action.data
+                token: action?.data?.access_token
             };
         }
         case Actions.LOGIN_FAILURE: {
@@ -53,3 +53,5 @@ const LoginReducer = (state = initialState, action = {}) => {
 
 
 export default LoginReducer;
+
+export const getTokenSelector = state => state?.LOGIN_CREDS?.token;

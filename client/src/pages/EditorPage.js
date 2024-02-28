@@ -31,11 +31,6 @@ const EditorPage = () => {
     const { roomId } = useParams();
     const reactNavigator = useNavigate();
 
-    useEffect(()=>{
-        dispatch(Actions.loginSuccessAction({data:"hello"}))
-    },[])
-    console.log(data,'dinesh')
-
     useEffect(() => {
         const init = async () => {
             socketRef.current = await initSocket();
@@ -115,14 +110,12 @@ const EditorPage = () => {
         <div className="mainWrap">
             <div className="aside">
                 <div className="asideInner">
-                    <div className="logo">
-                        <img
-                            className="logoImage"
-                            src="/code-sync.png"
-                            alt="logo"
-                        />
+                    <div style={{marginBottom:"20px"}}>
+                        <h1>
+                            Code Editor
+                        </h1>
                     </div>
-                    <h3>Connected</h3>
+                    <h3 style={{marginBottom:"10px"}}>Connected</h3>
                     <div className="clientsList">
                         {clients.map((client) => (
                             <Client

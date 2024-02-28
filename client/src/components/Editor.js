@@ -149,17 +149,41 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
                     editorRef.current.setValue(code);
                 }
             });
+            // socketRef.current.on(ACTIONS.CURSOR_POSITION, ({ userId, cursorPos }) => {
+            //     console.log(socketRef.current.id,"iddd")
+            //     console.log(userId,"userId")
+            //     if (userId !== socketRef.current.id) {
+            //         updateCursor(userId, cursorPos);
+            //     }
+            // });
         }
 
         return () => {
             socketRef.current.off(ACTIONS.CODE_CHANGE);
+            // socketRef.current.off(ACTIONS.CURSOR_POSITION);
         };
     }, [socketRef.current]);
 
+    const updateCursor = (userId, cursorPos) => {
+        const cursorElement = createOrUpdateCursorElement(userId);
+        const coords = editorRef.current.cursorCoords(cursorPos, 'local');
+        cursorElement.style.left = coords.left + 'px';
+        cursorElement.style.top = coords.bottom + 'px';
+    };
 
+    const createOrUpdateCursorElement = (userId) => {
+        let cursorElement = document.getElementById(`cursor-${userId}`);
+        if (!cursorElement) {
+            cursorElement = document.createElement('div');
+            cursorElement.id = `cursor-${userId}`;
+            cursorElement.className = 'cursor';
+            document.body.appendChild(cursorElement);
+        }
+        return cursorElement;
+    };
 
     return (
-            <textarea id="realtimeEditor"></textarea>
+        <textarea id="realtimeEditor"></textarea>
     );
 };
 

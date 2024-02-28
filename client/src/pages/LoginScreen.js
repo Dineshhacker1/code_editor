@@ -2,9 +2,13 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import Actions from '../redux/actions';
+
 
 const LoginScreen = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [loginState, setLoginState] = useState({
         email: "",
         password: ""
@@ -23,6 +27,7 @@ const LoginScreen = () => {
                 .then(response => {
                     if(response.status === 200 || response.status === 201){
                         console.log(response,"response")
+                        dispatch(Actions.loginSuccessAction(response?.data))
                         toast.success("Login success")
                         navigate("/home")
                     }

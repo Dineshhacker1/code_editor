@@ -40,16 +40,19 @@ const Home = () => {
             joinRoom();
         }
     };
+
+    const logout=()=>{
+        localStorage.clear()
+        navigate("/login")
+    }
     
     return (
         <div className="homePageWrapper">
             <div className="formWrapper">
-                <img
-                    className="homePageLogo"
-                    src="/code-sync.png"
-                    alt="code-sync-logo"
-                />
-                <h4 className="mainLabel">Paste invitation ROOM ID</h4>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"20px"}}>
+                  <h1>Code Editor</h1>
+                </div>
+                {/* <h4 className="mainLabel">Paste invitation ROOM ID</h4> */}
                 <div className="inputGroup">
                     <input
                         type="text"
@@ -70,7 +73,7 @@ const Home = () => {
                     <button className="btn joinBtn" onClick={joinRoom}>
                         Join
                     </button>
-                    <span className="createInfo">
+                    {/* <span className="createInfo">
                         If you don't have an invite then create &nbsp;
                         <a
                             onClick={createNewRoom}
@@ -79,6 +82,9 @@ const Home = () => {
                         >
                             new room
                         </a>
+                    </span> */}
+                    <span onClick={logout} style={{cursor:"pointer"}}>
+                        Logout
                     </span>
                 </div>
             </div>

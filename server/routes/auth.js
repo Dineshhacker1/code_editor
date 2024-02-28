@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
 			return res.status(401).send({ message: "Invalid Email or Password" });
 
 		const token = generateAuthToken(user);
-		res.status(200).send({ data: token, message: "logged in successfully" });
+		res.status(200).send({ access_token: token, message: "logged in successfully" });
 	} catch (error) {
 		console.log(error, 'error')
 		res.status(500).send({ message: "Internal Server Error" });

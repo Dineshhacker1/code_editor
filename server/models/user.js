@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
+const JWTPRIVATEKEY = "wkjhfiwehfuiheubcquiuiweucwbcb@#$$@@#"
+
+
 const userSchema = new mongoose.Schema({
 	userName: { type: String, required: true },
 	email: { type: String, required: true },
@@ -9,7 +12,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAuthToken = async ()=> {
 	console.log('this userid ', this._id)
-	const token = await jwt.sign({ _id: this._id }, ""+ env.JWTPRIVATEKEY, {
+	const token = await jwt.sign({ _id: this._id }, ""+ JWTPRIVATEKEY, {
 		expiresIn: "1d",
 	});
 	console.log(token)

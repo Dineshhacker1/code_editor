@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import toast from 'react-hot-toast';
 import Client from '../components/Client';
 import Editor from '../components/Editor'
 import { language, cmtheme } from '../../src/atoms';
@@ -13,8 +12,12 @@ import {
     useParams,
 } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import Actions from '../redux/actions';
 
 const EditorPage = () => {
+    const dispatch = useDispatch();
+    const data = useSelector(data=> data);
 
     const [lang, setLang] = useRecoilState(language);
     const [them, setThem] = useRecoilState(cmtheme);
@@ -27,6 +30,11 @@ const EditorPage = () => {
     const location = useLocation();
     const { roomId } = useParams();
     const reactNavigator = useNavigate();
+
+    useEffect(()=>{
+        dispatch(Actions.loginSuccessAction({data:"hello"}))
+    },[])
+    console.log(data,'dinesh')
 
     useEffect(() => {
         const init = async () => {

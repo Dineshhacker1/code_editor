@@ -377,3 +377,64 @@ a {
     color: #4796ff;
     text-decoration: none;
   }
+
+  .commit-history {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .commit-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .commit-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .commit-message {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  .commit-meta {
+    color: #777;
+  }
+  
+  .commit-author {
+    margin-right: 10px;
+  }
+  
+  .commit-timestamp {
+    font-style: italic;
+  }
+  
+  .commit-form {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+  
+  .text-area {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    resize: vertical;
+  }
+  
+  .commit-button {
+    padding: 10px;
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .commit-button:hover {
+    background-color: #218838;
+  }

@@ -14,10 +14,13 @@ import {
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import Actions from '../redux/actions';
+import axios from 'axios';
+import { getTokenSelector } from '../redux/reducers/LoginReducer';
 
 const EditorPage = () => {
     const dispatch = useDispatch();
-    const data = useSelector(data=> data);
+    const token = useSelector(getTokenSelector);
+    const [commitMessage, setCommitMessage] = useState("")
 
     const [lang, setLang] = useRecoilState(language);
     const [them, setThem] = useRecoilState(cmtheme);
@@ -87,13 +90,14 @@ const EditorPage = () => {
 
 
     async function copyRoomId() {
-        try {
-            await navigator.clipboard.writeText(roomId);
-            toast.success('Room ID has been copied to your clipboard');
-        } catch (err) {
-            toast.error('Could not copy the Room ID');
-            console.error(err);
-        }
+        // try {
+        //     await navigator.clipboard.writeText(roomId);
+        //     toast.success('Room ID has been copied to your clipboard');
+        // } catch (err) {
+        //     toast.error('Could not copy the Room ID');
+        //     console.error(err);
+        // }
+        reactNavigator("/history")
     }
 
     function leaveRoom() {
@@ -105,17 +109,50 @@ const EditorPage = () => {
         return <Navigate to="/" />;
     }
 
+    const handleCommit = (message) => {
+        if(!commitMessage){
+           toast.error("Please enter commit message")
+           return 
+        }
+        const headers = {
+            'Content-Type': 'application/json', 
+            Authorization: token, 
+          };
+        axios.post("http://localhost:5000/api/users/create/version",{
+            roomId: roomId,
+            message: commitMessage,
+            newCode: codeRef.current
+        },{ headers })
+        .then(res=>{
+            if(res.status === 201 || res.status === 200){
+                toast.success(res?.data?.message)
+                setCommitMessage("")
+            }
+        })
+        .catch(err=>console.log(err))
+    };
 
     return (
         <div className="mainWrap">
             <div className="aside">
                 <div className="asideInner">
-                    <div style={{marginBottom:"20px"}}>
+                    {/* <div style={{ marginBottom: "20px" }}>
                         <h1>
                             Code Editor
                         </h1>
+                    </div> */}
+                    <div className="commit-form">
+                        <textarea
+                            className="text-area"
+                            placeholder="Enter your commit message..."
+                            value={commitMessage}
+                            onChange={(e) => setCommitMessage(e.target.value)}
+                        />
+                        <button className="commit-button" onClick={handleCommit}>
+                            Commit Changes
+                        </button>
                     </div>
-                    <h3 style={{marginBottom:"10px"}}>Connected</h3>
+                    <h3 style={{ marginBottom: "10px" }}>Connected</h3>
                     <div className="clientsList">
                         {clients.map((client) => (
                             <Client
@@ -125,6 +162,7 @@ const EditorPage = () => {
                         ))}
                     </div>
                 </div>
+
 
                 <label>
                     Select Language:
@@ -153,7 +191,7 @@ const EditorPage = () => {
                     </select>
                 </label>
 
-                <label>
+                {/* <label>
                     Select Theme:
                     <select value={them} onChange={(e) => { setThem(e.target.value); window.location.reload(); }} className="seLang">
                         <option value="default">default</option>
@@ -220,10 +258,21 @@ const EditorPage = () => {
                         <option value="yonce">yonce</option>
                         <option value="zenburn">zenburn</option>
                     </select>
-                </label>
+                </label> */}
+                {/* <div className="commit-form">
+                    <textarea
+                        className="text-area"
+                        placeholder="Enter your commit message..."
+                        value={commitMessage}
+                        onChange={(e) => setCommitMessage(e.target.value)}
+                    />
+                    <button className="commit-button" onClick={handleCommit}>
+                        Commit
+                    </button>
+                </div> */}
 
-                <button className="btn copyBtn" onClick={copyRoomId}>
-                    Copy ROOM ID
+                <button className="btn btn-secondary" onClick={copyRoomId}>
+                    Version History
                 </button>
                 <button className="btn leaveBtn" onClick={leaveRoom}>
                     Leave

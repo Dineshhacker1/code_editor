@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import SignUpScreen from './pages/SignUp';
 import { useEffect } from 'react';
 import { getTokenSelector } from './redux/reducers/LoginReducer';
+import CommitHistory from './pages/CommitHistory';
 
 function App() {
     const loginData = useSelector(getTokenSelector)
@@ -34,6 +35,7 @@ function App() {
                     <Route path="/home" element={<Home />}></Route>
                     <Route path="/login" element={<LoginScreen />}></Route>
                     <Route path="/signup" element={<SignUpScreen />}></Route>
+                    <Route path="/history" element={<CommitHistory />}></Route>
                     <Route
                         path="/editor/:roomId"
                         element={<EditorPage />}

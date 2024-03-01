@@ -12,6 +12,7 @@ import SignUpScreen from './pages/SignUp';
 import { useEffect } from 'react';
 import { getTokenSelector } from './redux/reducers/LoginReducer';
 import CommitHistory from './pages/CommitHistory';
+import CommitData from './pages/CommitData';
 
 function App() {
     const loginData = useSelector(getTokenSelector)
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/login" element={<LoginScreen />}></Route>
                     <Route path="/signup" element={<SignUpScreen />}></Route>
                     <Route path="/history" element={<CommitHistory />}></Route>
+                    <Route path="/history/data" element={<CommitData />}></Route>
                     <Route
                         path="/editor/:roomId"
                         element={<EditorPage />}

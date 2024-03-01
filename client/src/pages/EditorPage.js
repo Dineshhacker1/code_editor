@@ -19,6 +19,7 @@ import Actions from '../redux/actions';
 import axios from 'axios';
 import { getTokenSelector } from '../redux/reducers/LoginReducer';
 import { getChatSelector } from '../redux/reducers/ChatReducer';
+import moment from 'moment/moment';
 
 const EditorPage = () => {
     const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const EditorPage = () => {
     const [clients, setClients] = useState([]);
 
     const socketRef = useRef(null);
+    const chatRef = useRef(null);
     const codeRef = useRef(null);
     const location = useLocation();
     const { roomId } = useParams();
@@ -53,6 +55,11 @@ const EditorPage = () => {
             .catch(err => console.log(err))
 
     }, [])
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatData]);
+
     useEffect(() => {
         const headers = {
             'Content-Type': 'application/json',
@@ -63,7 +70,7 @@ const EditorPage = () => {
         })
             .then(res => {
                 if (res.status === 201 || res.status === 200) {
-                   dispatch(Actions.chatGroupSuccessAction(res.data.chatData))
+                    dispatch(Actions.chatGroupSuccessAction(res.data.chatData))
                 }
             })
             .catch(err => console.log(err))
@@ -129,6 +136,33 @@ const EditorPage = () => {
         };
     }, []);
 
+    const scrollToBottom = () => {
+        if (chatRef.current) {
+            chatRef.current.scrollTop = chatRef.current.scrollHeight;
+        }
+    };
+
+    const getDateTime = (createdDate) => {
+        let dateTime = '';
+        if (
+            moment(moment().format('YYYY-MM-DD')).isSame(
+                moment(createdDate).format('YYYY-MM-DD'),
+            )
+        ) {
+            dateTime = moment(createdDate).format('hh:mm a');
+        } else if (
+            moment(moment().subtract(1, 'day').format('YYYY-MM-DD')).isSame(
+                moment(createdDate).format('YYYY-MM-DD'),
+            )
+        ) {
+            dateTime = "Yesterday";
+        } else {
+
+            dateTime = moment(createdDate).format('MM/DD/YYYY');
+        }
+        return dateTime;
+    };
+
 
     async function copyRoomId() {
         reactNavigator("/history")
@@ -167,6 +201,7 @@ const EditorPage = () => {
     };
 
     const handleClick = () => {
+        setChatMessage("")
         const data = {
             name: location.state.username,
             message: chatMessage
@@ -179,7 +214,7 @@ const EditorPage = () => {
 
     return (
         <div className="mainWrap">
-            {/* {<div className="aside">
+            {!openChat ? <div className="aside">
                 <div className="asideInner">
                     <div className="commit-form">
                         <textarea
@@ -237,7 +272,7 @@ const EditorPage = () => {
                     Leave
                 </button>
                 <div class="Message">
-                    <input title="Write Message" onChange={(e) => setChatMessage(e.target.value)} tabindex="i" pattern="\d+" placeholder="Chat..." class="MsgInput" type="text" />
+                    <input title="Write Message" onFocus={() => setOpenChat(true)} tabindex="i" pattern="\d+" placeholder="Chat..." class="MsgInput" type="text" />
                     <svg xmlns="http://www.w3.org/2000/svg" onClick={handleClick} version="1.0" width="30.000000pt" height="30.000000pt" viewBox="0 0 30.000000 30.000000" preserveAspectRatio="xMidYMid meet" class="SendSVG">
                         <g transform="translate(0.000000,30.000000) scale(0.100000,-0.100000)" fill="#ffffff70" stroke="none">
                             <path d="M44 256 c-3 -8 -4 -29 -2 -48 3 -31 5 -33 56 -42 28 -5 52 -13 52 -16 0 -3 -24 -11 -52 -16 -52 -9 -53 -9 -56 -48 -2 -21 1 -43 6 -48 10 -10 232 97 232 112 0 7 -211 120 -224 120 -4 0 -9 -6 -12 -14z"></path>
@@ -246,25 +281,31 @@ const EditorPage = () => {
 
                 </div>
             </div>
-            } */}
-            {
+                :
                 <div className="container">
                     <div className='text-end'>
-                        <p style={{ color: 'white', cursor: "pointer" }}>Close</p>
+                        <p style={{ color: 'white', cursor: "pointer" }} onClick={() => setOpenChat(false)}>Close</p>
                     </div>
-                    <div className="chat-window border">
+                    <div className="chat-window border chat-history" ref={chatRef}>
                         {chatData.map((msg, index) => (
-                            <div key={index} className="message" style={{ color: "white" }}>
-                                <strong>{msg.name}:</strong> {msg.message}
-                            </div>
+                            <ul className="clearfix">
+                                <li className={`${msg.name === location.state.username ? 'sender' : 'receiver'}`}>
+                                    <strong><p style={{ fontSize: "17px" }}>{msg.name}</p></strong>
+                                    <p style={{ wordWrap: "break-word" }}>{msg.message}</p>
+                                    <span className="time">
+                                        {getDateTime(msg?.createdAt)}
+                                    </span>
+                                </li>
+                            </ul>
                         ))}
                     </div>
                     <div className="input-group">
                         <input
                             type="text"
                             className="form-control"
-                            placeholder="Type your message..."
+                            placeholder="Chat..."
                             style={{ height: "45px" }}
+                            value={chatMessage} 
                             //  value={message}
                             onChange={(e) => setChatMessage(e.target.value)}
                         />

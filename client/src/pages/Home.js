@@ -55,6 +55,7 @@ const Home = () => {
                 {/* <h4 className="mainLabel">Paste invitation ROOM ID</h4> */}
                 <div className="inputGroup">
                     <input
+                        id="input1"
                         type="text"
                         className="inputBox"
                         placeholder="ROOM ID"
@@ -64,6 +65,7 @@ const Home = () => {
                     />
                     <input
                         type="text"
+                        id="input2"
                         className="inputBox"
                         placeholder="USERNAME"
                         onChange={(e) => setUsername(e.target.value)}

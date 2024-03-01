@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const Chat = require("../models/chat");
 const CodeModel = require("../models/code");
 const { User } = require("../models/user");
 const { validate } = require("../validations/validation")
@@ -104,6 +105,28 @@ router.get("/version/list", async (req, res) => {
 		// req.user = decoded;
 		const data = await CodeModel.find()
 		res.status(201).send({ history : data});
+	} catch (error) {
+		console.log(error, 'error')
+		res.status(500).send({ message: "Internal Server Error" });
+	}
+});
+router.get("/chat/list", async (req, res) => {
+	try {
+		const token = req.headers.authorization
+		if (!token) {
+			return res
+				.status(401)
+				.send({ message: "Unauthorized" });
+		}
+		const decoded = jwt.verify(token, secretKey);
+		if (!decoded) {
+			return res
+				.status(403)
+				.send({ message: "Forbidden" });
+		}
+		// req.user = decoded;
+		const data = await Chat.find()
+		res.status(201).send({ chatData : data});
 	} catch (error) {
 		console.log(error, 'error')
 		res.status(500).send({ message: "Internal Server Error" });

@@ -12,6 +12,7 @@ const io = new Server(server);
 const connection = require("./db");
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
+const Chat = require('./models/chat');
 
 connection();
 
@@ -62,6 +63,12 @@ io.on('connection', (socket) => {
 
     socket.on(ACTIONS.SYNC_CODE, ({ socketId, code }) => {
         io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
+    });
+
+    socket.on(ACTIONS.CHAT, ({ roomId, data }) => {
+        Chat.create({ name: data.name, message: data.message }).then(() => {
+            io.to(roomId).emit(ACTIONS.CHAT, { roomId, data });
+        }).catch(err => console.error(err));
     });
 
     socket.on('disconnecting', () => {

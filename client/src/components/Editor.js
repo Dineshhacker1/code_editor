@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { language, cmtheme } from '../../src/atoms';
 import { useRecoilValue } from 'recoil';
 import ACTIONS from '../Actions';
@@ -106,12 +106,19 @@ import 'codemirror/addon/search/searchcursor.js';
 import 'codemirror/addon/search/jump-to-line.js';
 import 'codemirror/addon/dialog/dialog.js';
 import 'codemirror/addon/dialog/dialog.css';
+// import { useLint } from '../containers/Eslint';
 
 const Editor = ({ socketRef, roomId, onCodeChange }) => {
-
+    const [lintResult, setLintResult] = useState(null);
     const editorRef = useRef(null);
     const lang = useRecoilValue(language);
     const editorTheme = useRecoilValue(cmtheme);
+
+    // useEffect(() => {
+    //     // Trigger linting when the component mounts or code changes
+    //     const codeToLint = '// Your code to be linted'; // Replace with actual code
+    //     useLint(codeToLint, setLintResult);
+    // }, [codeToLint]);
 
     useEffect(() => {
         async function init() {
@@ -125,6 +132,11 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
                     lineNumbers: true,
                 }
             );
+
+            editorRef.current.on('cursorActivity', (instance, changes) => {
+                const cursorPosition = editorRef.current.getCursor();
+                console.log(cursorPosition, 'codeeee')
+            });
 
             editorRef.current.on('change', (instance, changes) => {
                 const { origin } = changes;
@@ -183,7 +195,11 @@ const Editor = ({ socketRef, roomId, onCodeChange }) => {
     };
 
     return (
-        <textarea id="realtimeEditor"></textarea>
+        <textarea id="realtimeEditor">
+            {/* {lintResult && (
+                <pre>{JSON.stringify(lintResult, null, 2)}</pre>
+            )} */}
+        </textarea>
     );
 };
 

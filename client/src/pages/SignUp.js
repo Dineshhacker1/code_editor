@@ -51,7 +51,7 @@ const SignUpScreen = () => {
                         <input type="text" value={userState.userName} name="userName" id="username" style={{ backgroundColor: "#e2e2e2" }} onChange={handleChange} placeholder="UserName" />
                         <input type="email" value={userState.email} name="email" style={{ backgroundColor: "#e2e2e2" }} placeholder="Email" onChange={handleChange} id="email" />
                         <input type="password" value={userState.password} name="password" style={{ backgroundColor: "#e2e2e2" }} placeholder="Password" onChange={handleChange} id="password" />
-                        <button onClick={handleSubmit}>Sign Up</button>
+                        <button id='submitSignUp' onClick={handleSubmit}>Sign Up</button>
                     </form>
                 </div>
             </div>

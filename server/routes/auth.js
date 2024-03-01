@@ -10,7 +10,7 @@ const JWTPRIVATEKEY = "wkjhfiwehfuiheubcquiuiweucwbcb@#$$@@#"
 
 function generateAuthToken(userObj) {
 	const token = jwt.sign({ email: userObj.email, password: userObj.password }, JWTPRIVATEKEY, {
-		expiresIn: "1d",
+		expiresIn: "5d",
 	});
 	return token;
 }

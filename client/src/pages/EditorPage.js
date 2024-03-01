@@ -5,6 +5,8 @@ import { language, cmtheme } from '../../src/atoms';
 import { useRecoilState } from 'recoil';
 import ACTIONS from '../Actions';
 import { initSocket } from '../socket';
+import sendIcon from '../asset/img/send.svg'
+import cross from '../asset/img/cross.jpg'
 import {
     useLocation,
     useNavigate,
@@ -16,17 +18,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import Actions from '../redux/actions';
 import axios from 'axios';
 import { getTokenSelector } from '../redux/reducers/LoginReducer';
+import { getChatSelector } from '../redux/reducers/ChatReducer';
 
 const EditorPage = () => {
     const dispatch = useDispatch();
     const token = useSelector(getTokenSelector);
+    const chatData = useSelector(getChatSelector);
     const [commitMessage, setCommitMessage] = useState("")
-
+    const [openChat, setOpenChat] = useState(false)
+    const [chatMessage, setChatMessage] = useState("")
     const [lang, setLang] = useRecoilState(language);
     const [them, setThem] = useRecoilState(cmtheme);
-
     const [clients, setClients] = useState([]);
-
 
     const socketRef = useRef(null);
     const codeRef = useRef(null);
@@ -34,6 +37,38 @@ const EditorPage = () => {
     const { roomId } = useParams();
     const reactNavigator = useNavigate();
 
+    useEffect(() => {
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        };
+        axios.get("http://localhost:5000/api/users/version/list", {
+            headers
+        })
+            .then(res => {
+                if (res.status === 201 || res.status === 200) {
+                    console.log(res, 'ress')
+                }
+            })
+            .catch(err => console.log(err))
+
+    }, [])
+    useEffect(() => {
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: token,
+        };
+        axios.get("http://localhost:5000/api/users/chat/list", {
+            headers
+        })
+            .then(res => {
+                if (res.status === 201 || res.status === 200) {
+                   dispatch(Actions.chatGroupSuccessAction(res.data.chatData))
+                }
+            })
+            .catch(err => console.log(err))
+
+    }, [])
     useEffect(() => {
         const init = async () => {
             socketRef.current = await initSocket();
@@ -66,7 +101,13 @@ const EditorPage = () => {
                     });
                 }
             );
-
+            socketRef.current.on(
+                ACTIONS.CHAT,
+                ({ roomId, data }) => {
+                    // console.log(roomId, 'iddd', data)
+                    dispatch(Actions.chatSuccessAction(data))
+                }
+            );
             // Listening for disconnected
             socketRef.current.on(
                 ACTIONS.DISCONNECTED,
@@ -90,13 +131,6 @@ const EditorPage = () => {
 
 
     async function copyRoomId() {
-        // try {
-        //     await navigator.clipboard.writeText(roomId);
-        //     toast.success('Room ID has been copied to your clipboard');
-        // } catch (err) {
-        //     toast.error('Could not copy the Room ID');
-        //     console.error(err);
-        // }
         reactNavigator("/history")
     }
 
@@ -110,37 +144,43 @@ const EditorPage = () => {
     }
 
     const handleCommit = (message) => {
-        if(!commitMessage){
-           toast.error("Please enter commit message")
-           return 
+        if (!commitMessage) {
+            toast.error("Please enter commit message")
+            return
         }
         const headers = {
-            'Content-Type': 'application/json', 
-            Authorization: token, 
-          };
-        axios.post("http://localhost:5000/api/users/create/version",{
+            'Content-Type': 'application/json',
+            Authorization: token,
+        };
+        axios.post("http://localhost:5000/api/users/create/version", {
             roomId: roomId,
             message: commitMessage,
             newCode: codeRef.current
-        },{ headers })
-        .then(res=>{
-            if(res.status === 201 || res.status === 200){
-                toast.success(res?.data?.message)
-                setCommitMessage("")
-            }
-        })
-        .catch(err=>console.log(err))
+        }, { headers })
+            .then(res => {
+                if (res.status === 201 || res.status === 200) {
+                    toast.success(res?.data?.message)
+                    setCommitMessage("")
+                }
+            })
+            .catch(err => console.log(err))
     };
+
+    const handleClick = () => {
+        const data = {
+            name: location.state.username,
+            message: chatMessage
+        }
+        socketRef.current.emit(ACTIONS.CHAT, {
+            roomId,
+            data
+        });
+    }
 
     return (
         <div className="mainWrap">
-            <div className="aside">
+            {/* {<div className="aside">
                 <div className="asideInner">
-                    {/* <div style={{ marginBottom: "20px" }}>
-                        <h1>
-                            Code Editor
-                        </h1>
-                    </div> */}
                     <div className="commit-form">
                         <textarea
                             className="text-area"
@@ -190,95 +230,52 @@ const EditorPage = () => {
                         <option value="yaml">yaml</option>
                     </select>
                 </label>
-
-                {/* <label>
-                    Select Theme:
-                    <select value={them} onChange={(e) => { setThem(e.target.value); window.location.reload(); }} className="seLang">
-                        <option value="default">default</option>
-                        <option value="3024-day">3024-day</option>
-                        <option value="3024-night">3024-night</option>
-                        <option value="abbott">abbott</option>
-                        <option value="abcdef">abcdef</option>
-                        <option value="ambiance">ambiance</option>
-                        <option value="ayu-dark">ayu-dark</option>
-                        <option value="ayu-mirage">ayu-mirage</option>
-                        <option value="base16-dark">base16-dark</option>
-                        <option value="base16-light">base16-light</option>
-                        <option value="bespin">bespin</option>
-                        <option value="blackboard">blackboard</option>
-                        <option value="cobalt">cobalt</option>
-                        <option value="colorforth">colorforth</option>
-                        <option value="darcula">darcula</option>
-                        <option value="duotone-dark">duotone-dark</option>
-                        <option value="duotone-light">duotone-light</option>
-                        <option value="eclipse">eclipse</option>
-                        <option value="elegant">elegant</option>
-                        <option value="erlang-dark">erlang-dark</option>
-                        <option value="gruvbox-dark">gruvbox-dark</option>
-                        <option value="hopscotch">hopscotch</option>
-                        <option value="icecoder">icecoder</option>
-                        <option value="idea">idea</option>
-                        <option value="isotope">isotope</option>
-                        <option value="juejin">juejin</option>
-                        <option value="lesser-dark">lesser-dark</option>
-                        <option value="liquibyte">liquibyte</option>
-                        <option value="lucario">lucario</option>
-                        <option value="material">material</option>
-                        <option value="material-darker">material-darker</option>
-                        <option value="material-palenight">material-palenight</option>
-                        <option value="material-ocean">material-ocean</option>
-                        <option value="mbo">mbo</option>
-                        <option value="mdn-like">mdn-like</option>
-                        <option value="midnight">midnight</option>
-                        <option value="monokai">monokai</option>
-                        <option value="moxer">moxer</option>
-                        <option value="neat">neat</option>
-                        <option value="neo">neo</option>
-                        <option value="night">night</option>
-                        <option value="nord">nord</option>
-                        <option value="oceanic-next">oceanic-next</option>
-                        <option value="panda-syntax">panda-syntax</option>
-                        <option value="paraiso-dark">paraiso-dark</option>
-                        <option value="paraiso-light">paraiso-light</option>
-                        <option value="pastel-on-dark">pastel-on-dark</option>
-                        <option value="railscasts">railscasts</option>
-                        <option value="rubyblue">rubyblue</option>
-                        <option value="seti">seti</option>
-                        <option value="shadowfox">shadowfox</option>
-                        <option value="solarized">solarized</option>
-                        <option value="the-matrix">the-matrix</option>
-                        <option value="tomorrow-night-bright">tomorrow-night-bright</option>
-                        <option value="tomorrow-night-eighties">tomorrow-night-eighties</option>
-                        <option value="ttcn">ttcn</option>
-                        <option value="twilight">twilight</option>
-                        <option value="vibrant-ink">vibrant-ink</option>
-                        <option value="xq-dark">xq-dark</option>
-                        <option value="xq-light">xq-light</option>
-                        <option value="yeti">yeti</option>
-                        <option value="yonce">yonce</option>
-                        <option value="zenburn">zenburn</option>
-                    </select>
-                </label> */}
-                {/* <div className="commit-form">
-                    <textarea
-                        className="text-area"
-                        placeholder="Enter your commit message..."
-                        value={commitMessage}
-                        onChange={(e) => setCommitMessage(e.target.value)}
-                    />
-                    <button className="commit-button" onClick={handleCommit}>
-                        Commit
-                    </button>
-                </div> */}
-
                 <button className="btn btn-secondary" onClick={copyRoomId}>
                     Version History
                 </button>
                 <button className="btn leaveBtn" onClick={leaveRoom}>
                     Leave
                 </button>
-            </div>
+                <div class="Message">
+                    <input title="Write Message" onChange={(e) => setChatMessage(e.target.value)} tabindex="i" pattern="\d+" placeholder="Chat..." class="MsgInput" type="text" />
+                    <svg xmlns="http://www.w3.org/2000/svg" onClick={handleClick} version="1.0" width="30.000000pt" height="30.000000pt" viewBox="0 0 30.000000 30.000000" preserveAspectRatio="xMidYMid meet" class="SendSVG">
+                        <g transform="translate(0.000000,30.000000) scale(0.100000,-0.100000)" fill="#ffffff70" stroke="none">
+                            <path d="M44 256 c-3 -8 -4 -29 -2 -48 3 -31 5 -33 56 -42 28 -5 52 -13 52 -16 0 -3 -24 -11 -52 -16 -52 -9 -53 -9 -56 -48 -2 -21 1 -43 6 -48 10 -10 232 97 232 112 0 7 -211 120 -224 120 -4 0 -9 -6 -12 -14z"></path>
+                        </g>
+                    </svg><span class="l"></span>
 
+                </div>
+            </div>
+            } */}
+            {
+                <div className="container">
+                    <div className='text-end'>
+                        <p style={{ color: 'white', cursor: "pointer" }}>Close</p>
+                    </div>
+                    <div className="chat-window border">
+                        {chatData.map((msg, index) => (
+                            <div key={index} className="message" style={{ color: "white" }}>
+                                <strong>{msg.name}:</strong> {msg.message}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="input-group">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Type your message..."
+                            style={{ height: "45px" }}
+                            //  value={message}
+                            onChange={(e) => setChatMessage(e.target.value)}
+                        />
+                        <div className="input-group-append">
+                            <button className="btn btn-primary" type="button" onClick={handleClick}>
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
             <div className="editorWrap">
                 <Editor
                     socketRef={socketRef}

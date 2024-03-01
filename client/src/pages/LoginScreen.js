@@ -62,7 +62,7 @@ const LoginScreen = () => {
                             <input type="password" value={loginState.password} name="password" onChange={handleChange} placeholder="Password"/>
                         </div>
 
-                        <button type="submit" onClick={handleSubmit}>
+                        <button id='submit' type="submit" onClick={handleSubmit}>
                             Login
                         </button>
                         <div>

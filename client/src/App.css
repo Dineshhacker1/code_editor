@@ -438,3 +438,60 @@ a {
   .commit-button:hover {
     background-color: #218838;
   }
+
+  .Message {
+    height: 40px;
+    border-radius: 10px;
+    background-color: #40414f;
+    transform: translate(0px,0px);
+    box-shadow: 5px 5px #34343f;
+  }
+  
+  .MsgInput {
+    font-size: 18px;
+    border-radius: 5px;
+    background-color: #40414f;
+    border: none;
+    outline: none;
+    width: 150px;
+    height: 30px;
+    transform: translate(5px,-3px);
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+  }
+
+  .container {
+    /* max-width: 800px; */
+    margin-top: 50px;
+  }
+  
+  .chat-window {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 75vh;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  
+  .message {
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 8px;
+    word-wrap: break-word;
+  }
+
+  .chat-window::-webkit-scrollbar {
+    width: 2px; /* Set the width of the scrollbar */
+  }
+  
+  .chat-window::-webkit-scrollbar-thumb {
+    background-color: #a3acb6b7; /* Set the color of the thumb (scrolling handle) */
+    border-radius: 6px; /* Set the border radius of the thumb */
+  }
+  
+  .chat-window::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Set the color of the scrollbar track */
+    border-radius: 8px; /* Set the border radius of the scrollbar track */
+  }
+  

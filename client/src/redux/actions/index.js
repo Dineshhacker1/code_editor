@@ -1,7 +1,9 @@
 import * as loginActions from './LoginAction';
+import * as chatActions from './ChatAction';
 
 const Actions = {
     ...loginActions,
+    ...chatActions
 }
 export default Actions;
 

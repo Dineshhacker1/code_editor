@@ -6,7 +6,9 @@ const ACTIONS = {
     SYNC_CODE: 'sync-code',
     LEAVE: 'leave',
     CURSOR_POSITION:'cursor_position',
-    CODE_COMMIT:'code_commit'
+    CODE_COMMIT:'code_commit',
+    CHAT:'chat',
+
 };
 
 module.exports = ACTIONS;

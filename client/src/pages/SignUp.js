@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import { toast } from 'react-toastify';
+import { ENDPOINT } from '../Constants';
 
 const SignUpScreen = () => {
     const navigate = useNavigate();
@@ -20,11 +21,10 @@ const SignUpScreen = () => {
         else if (!userState.password) {
             toast.error("please enter password")
         } else {
-            await axios.post("http://localhost:5000/api/auth/signup", {
+            await axios.post(`${ENDPOINT}/api/auth/signup`, {
                 ...userState
             })
                 .then(response => {
-                    // debugger
                     if(response.status === 200 || response.status === 201){
                         toast.success("Sign up success")
                         navigate("/login")

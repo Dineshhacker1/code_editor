@@ -9,28 +9,6 @@ const { v4 } = require("uuid")
 
 const secretKey = "wkjhfiwehfuiheubcquiuiweucwbcb@#$$@@#"
 
-// router.post("/", async (req, res) => {
-// 	try {
-// 		const { error } = validate(req.body);
-// 		if (error)
-// 			return res.status(400).send({ message: error.details[0].message });
-
-// 		const user = await User.findOne({ email: req.body.email });
-// 		if (user)
-// 			return res
-// 				.status(409)
-// 				.send({ message: "User with given email already Exist!" });
-
-// 		const salt = await bcrypt.genSalt(Number(process.env.SALT));
-// 		const hashPassword = await bcrypt.hash(req.body.password, salt);
-
-// 		await new User({ ...req.body, password: hashPassword }).save();
-// 		res.status(201).send({ message: "User created successfully" });
-// 	} catch (error) {
-// 		res.status(500).send({ message: "Internal Server Error" });
-// 	}
-// });
-
 router.post("/", async (req, res) => {
 	try {
 		const token = req.headers.authorization
@@ -41,7 +19,6 @@ router.post("/", async (req, res) => {
 		}
 		const decoded = jwt.verify(token, secretKey, function (err, res) {
 			if (err) {
-				console.log(err, 'lll')
 			}
 		});
 		if (!decoded) {
@@ -61,14 +38,13 @@ router.post("/", async (req, res) => {
 router.post("/create/version", async (req, res) => {
 	try {
 		const token = req.headers.authorization
-		const {newCode,roomId,message} = req.body
+		const { newCode, roomId, message } = req.body
 		if (!token) {
 			return res
 				.status(401)
 				.send({ message: "Unauthorized" });
 		}
 		const decoded = jwt.verify(token, secretKey);
-		console.log(decoded,'token')
 		if (!decoded) {
 			return res
 				.status(403)
@@ -81,7 +57,7 @@ router.post("/create/version", async (req, res) => {
 			version: v4(),
 			message: message
 		});
-		res.status(201).send({ message : "Committed successfully"});
+		res.status(201).send({ message: "Committed successfully" });
 	} catch (error) {
 		console.log(error, 'error')
 		res.status(500).send({ message: "Internal Server Error" });
@@ -102,9 +78,8 @@ router.get("/version/list", async (req, res) => {
 				.status(403)
 				.send({ message: "Forbidden" });
 		}
-		// req.user = decoded;
 		const data = await CodeModel.find()
-		res.status(201).send({ history : data});
+		res.status(201).send({ history: data });
 	} catch (error) {
 		console.log(error, 'error')
 		res.status(500).send({ message: "Internal Server Error" });
@@ -113,6 +88,7 @@ router.get("/version/list", async (req, res) => {
 router.get("/chat/list", async (req, res) => {
 	try {
 		const token = req.headers.authorization
+		const roomId = req.query
 		if (!token) {
 			return res
 				.status(401)
@@ -124,9 +100,8 @@ router.get("/chat/list", async (req, res) => {
 				.status(403)
 				.send({ message: "Forbidden" });
 		}
-		// req.user = decoded;
 		const data = await Chat.find()
-		res.status(201).send({ chatData : data});
+		res.status(201).send({ chatData: data });
 	} catch (error) {
 		console.log(error, 'error')
 		res.status(500).send({ message: "Internal Server Error" });

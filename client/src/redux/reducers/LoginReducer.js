@@ -3,6 +3,7 @@ import Actions from '../actions';
 const initialState = {
     isLoading: false,
     token: null,
+    userName: ""
 }
 
 const LoginReducer = (state = initialState, action = {}) => {
@@ -17,7 +18,8 @@ const LoginReducer = (state = initialState, action = {}) => {
             return {
                 ...state,
                 isLoading: false,
-                token: action?.data?.access_token
+                token: action?.data?.access_token,
+                userName: action?.data?.user
             };
         }
         case Actions.LOGIN_FAILURE: {
@@ -25,6 +27,7 @@ const LoginReducer = (state = initialState, action = {}) => {
                 ...state,
                 isLoading: false,
                 token: null,
+                userName: ""
             };
         }
         case Actions.LOGOUT: {
@@ -55,3 +58,4 @@ const LoginReducer = (state = initialState, action = {}) => {
 export default LoginReducer;
 
 export const getTokenSelector = state => state?.LOGIN_CREDS?.token;
+export const getUserNameSelector = state => state?.LOGIN_CREDS?.userName;

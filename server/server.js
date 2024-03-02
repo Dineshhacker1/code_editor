@@ -34,8 +34,6 @@ function getAllConnectedClients(roomId) {
     );
 }
 
-
-
 io.on('connection', (socket) => {
     console.log('socket connected', socket.id);
 
@@ -56,17 +54,13 @@ io.on('connection', (socket) => {
         socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
     });
 
-    // socket.on(ACTIONS.CODE_COMMIT, ({ roomId, code }) => {
-
-    //     // socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
-    // });
-
     socket.on(ACTIONS.SYNC_CODE, ({ socketId, code }) => {
         io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
     });
 
     socket.on(ACTIONS.CHAT, ({ roomId, data }) => {
-        Chat.create({ name: data.name, message: data.message }).then(() => {
+        Chat.create({ name: data.name, message: data.message, roomId: roomId }).then(() => {
+            data["roomId"] = roomId
             io.to(roomId).emit(ACTIONS.CHAT, { roomId, data });
         }).catch(err => console.error(err));
     });
@@ -83,9 +77,6 @@ io.on('connection', (socket) => {
         socket.leave();
     });
 });
-
-
-
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));

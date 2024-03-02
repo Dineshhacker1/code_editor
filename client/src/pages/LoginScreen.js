@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import Actions from '../redux/actions';
+import { ENDPOINT } from '../Constants';
 
 
 const LoginScreen = () => {
@@ -21,45 +22,48 @@ const LoginScreen = () => {
         else if (!loginState.password) {
             toast.error("please enter password")
         } else {
-            await axios.post("http://localhost:5000/api/auth/login", {
+            await axios.post(`${ENDPOINT}/api/auth/login`, {
                 ...loginState
             })
                 .then(response => {
-                    if(response.status === 200 || response.status === 201){
-                        console.log(response,"response")
+                    if (response.status === 200 || response.status === 201) {
                         dispatch(Actions.loginSuccessAction(response?.data))
                         toast.success("Login success")
                         navigate("/home")
+                    } else {
+                        toast.error("Invalid credentials")
                     }
                 })
-                .catch(err => console.log(err))
+                .catch(err =>{
+                    toast.error("Invalid credentials")
+                })
         }
     }
-    const handleChange=(e)=>{
-       setLoginState(prev=>({
-        ...prev,
-        [e.target.name] : e.target.value
-       }))
+    const handleChange = (e) => {
+        setLoginState(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
     }
     return (
         <>
             <div className="login-card">
                 <div className="login-card-content">
                     <div className="header">
-                        <h2>Login to Code Editor</h2>
+                        <h2>Login</h2>
                     </div>
                     <div className="form">
                         <div className="form-field username">
                             <div className="icon">
                                 <i className="far fa-envelope"></i>
                             </div>
-                            <input type="text" value={loginState.email} name="email" onChange={handleChange} placeholder="Email"/>
+                            <input type="text" value={loginState.email} name="email" onChange={handleChange} placeholder="Email" />
                         </div>
                         <div className="form-field password">
                             <div className="icon">
                                 <i className="fas fa-lock"></i>
                             </div>
-                            <input type="password" value={loginState.password} name="password" onChange={handleChange} placeholder="Password"/>
+                            <input type="password" value={loginState.password} name="password" onChange={handleChange} placeholder="Password" />
                         </div>
 
                         <button id='submit' type="submit" onClick={handleSubmit}>

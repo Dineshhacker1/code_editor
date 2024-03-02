@@ -20,7 +20,6 @@ function App() {
     const location = useLocation();
     useEffect(() => {
         const currentPath = location.pathname ?? "/";
-        console.log(currentPath, 'currentPath')
         if (!loginData) {
             navigate("/login")
         } else {

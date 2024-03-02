@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserNameSelector } from '../redux/reducers/LoginReducer';
 
 const Home = () => {
     const navigate = useNavigate();
-
     const [roomId, setRoomId] = useState('');
     const [username, setUsername] = useState('');
+    const userNameSelector = useSelector(getUserNameSelector) 
 
     const createNewRoom = (e) => {
         e.preventDefault();
@@ -22,15 +24,13 @@ const Home = () => {
     };
 
     const joinRoom = () => {
-        if (!roomId || !username) {
+        if (!roomId || !userNameSelector) {
             toast.error('ROOM ID & username is required');
             return;
         }
-
-        // Redirect
         navigate(`/editor/${roomId}`, {
             state: {
-                username,
+                username : userNameSelector,
             },
         });
     };
@@ -52,7 +52,6 @@ const Home = () => {
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"20px"}}>
                   <h1>Code Editor</h1>
                 </div>
-                {/* <h4 className="mainLabel">Paste invitation ROOM ID</h4> */}
                 <div className="inputGroup">
                     <input
                         id="input1"
@@ -63,28 +62,9 @@ const Home = () => {
                         value={roomId}
                         onKeyUp={handleInputEnter}
                     />
-                    <input
-                        type="text"
-                        id="input2"
-                        className="inputBox"
-                        placeholder="USERNAME"
-                        onChange={(e) => setUsername(e.target.value)}
-                        value={username}
-                        onKeyUp={handleInputEnter}
-                    />
                     <button className="btn joinBtn" onClick={joinRoom}>
                         Join
                     </button>
-                    {/* <span className="createInfo">
-                        If you don't have an invite then create &nbsp;
-                        <a
-                            onClick={createNewRoom}
-                            href=""
-                            className="createNewBtn"
-                        >
-                            new room
-                        </a>
-                    </span> */}
                     <span onClick={logout} style={{cursor:"pointer"}}>
                         Logout
                     </span>

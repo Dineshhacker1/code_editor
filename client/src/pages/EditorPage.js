@@ -5,8 +5,6 @@ import { language, cmtheme } from '../../src/atoms';
 import { useRecoilState } from 'recoil';
 import ACTIONS from '../Actions';
 import { initSocket } from '../socket';
-import sendIcon from '../asset/img/send.svg'
-import cross from '../asset/img/cross.jpg'
 import {
     useLocation,
     useNavigate,
@@ -20,6 +18,7 @@ import axios from 'axios';
 import { getTokenSelector } from '../redux/reducers/LoginReducer';
 import { getChatSelector } from '../redux/reducers/ChatReducer';
 import moment from 'moment/moment';
+import { ENDPOINT } from '../Constants';
 
 const EditorPage = () => {
     const dispatch = useDispatch();
@@ -38,13 +37,14 @@ const EditorPage = () => {
     const location = useLocation();
     const { roomId } = useParams();
     const reactNavigator = useNavigate();
+    const chatFilter = chatData.filter(o => o.roomId == roomId);
 
     useEffect(() => {
         const headers = {
             'Content-Type': 'application/json',
             Authorization: token,
         };
-        axios.get("http://localhost:5000/api/users/version/list", {
+        axios.get(`${ENDPOINT}/api/users/version/list`, {
             headers
         })
             .then(res => {
@@ -65,7 +65,7 @@ const EditorPage = () => {
             'Content-Type': 'application/json',
             Authorization: token,
         };
-        axios.get("http://localhost:5000/api/users/chat/list", {
+        axios.get(`${ENDPOINT}/api/users/chat/list?roomId=${roomId}`, {
             headers
         })
             .then(res => {
@@ -76,6 +76,7 @@ const EditorPage = () => {
             .catch(err => console.log(err))
 
     }, [])
+
     useEffect(() => {
         const init = async () => {
             socketRef.current = await initSocket();
@@ -93,7 +94,6 @@ const EditorPage = () => {
                 username: location.state?.username,
             });
 
-            // Listening for joined event
             socketRef.current.on(
                 ACTIONS.JOINED,
                 ({ clients, username, socketId }) => {
@@ -111,11 +111,9 @@ const EditorPage = () => {
             socketRef.current.on(
                 ACTIONS.CHAT,
                 ({ roomId, data }) => {
-                    // console.log(roomId, 'iddd', data)
                     dispatch(Actions.chatSuccessAction(data))
                 }
             );
-            // Listening for disconnected
             socketRef.current.on(
                 ACTIONS.DISCONNECTED,
                 ({ socketId, username }) => {
@@ -165,16 +163,20 @@ const EditorPage = () => {
 
 
     async function copyRoomId() {
-        reactNavigator("/history")
+        reactNavigator("/history", {
+            state: {
+                roomId
+            }
+        })
     }
 
     function leaveRoom() {
-        reactNavigator('/');
+        reactNavigator('/home');
     }
 
 
     if (!location.state) {
-        return <Navigate to="/" />;
+        return <Navigate to="/home" />;
     }
 
     const handleCommit = (message) => {
@@ -186,7 +188,7 @@ const EditorPage = () => {
             'Content-Type': 'application/json',
             Authorization: token,
         };
-        axios.post("http://localhost:5000/api/users/create/version", {
+        axios.post(`${ENDPOINT}/api/users/create/version`, {
             roomId: roomId,
             message: commitMessage,
             newCode: codeRef.current
@@ -204,7 +206,7 @@ const EditorPage = () => {
         setChatMessage("")
         const data = {
             name: location.state.username,
-            message: chatMessage
+            message: chatMessage,
         }
         socketRef.current.emit(ACTIONS.CHAT, {
             roomId,
@@ -287,7 +289,7 @@ const EditorPage = () => {
                         <p style={{ color: 'white', cursor: "pointer" }} onClick={() => setOpenChat(false)}>Close</p>
                     </div>
                     <div className="chat-window border chat-history" ref={chatRef}>
-                        {chatData.map((msg, index) => (
+                        {chatFilter.map((msg, index) => (
                             <ul className="clearfix">
                                 <li className={`${msg.name === location.state.username ? 'sender' : 'receiver'}`}>
                                     <strong><p style={{ fontSize: "17px" }}>{msg.name}</p></strong>
@@ -305,8 +307,7 @@ const EditorPage = () => {
                             className="form-control"
                             placeholder="Chat..."
                             style={{ height: "45px" }}
-                            value={chatMessage} 
-                            //  value={message}
+                            value={chatMessage}
                             onChange={(e) => setChatMessage(e.target.value)}
                         />
                         <div className="input-group-append">
